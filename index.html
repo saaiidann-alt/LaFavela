@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan Fiestas de Quito - La Favela</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Chosen Palette: Rojo Festivo (#ff4757), Gris Oscuro (#2f3542), Acento Naranja (#ffa502), Fondo Claro (#f1f2f6) -->
+    <!-- Application Structure Plan: SPA con navegación por pestañas. Actualizado con textos personalizados para "La Favela". -->
+    <!-- Visualization & Content Choices: Textos actualizados según requerimientos del usuario. Gráfico de presupuesto recalculado. Link al menú añadido. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        :root {
+            --primary: #ff4757;
+            --secondary: #2f3542;
+            --accent: #ffa502;
+            --bg-light: #f1f2f6;
+            --text-dark: #2f3542;
+        }
+        body {
+            background-color: var(--bg-light);
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+        .nav-link.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .nav-link:hover {
+            border-bottom-color: var(--accent);
+            color: var(--text-dark);
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.75rem;
+            color: var(--primary);
+        }
+        .price-tag {
+            background-color: var(--secondary);
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        .table-header {
+            background-color: var(--secondary);
+            color: white;
+        }
+        .table-total {
+            background-color: var(--accent);
+            color: var(--secondary);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .tip-card {
+            background-color: white;
+            border-left: 5px solid var(--primary);
+        }
+        /* Estilos para que la fuente Bebas Neue se cargue */
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;700&display=swap');
+        .font-bebas {
+            font-family: 'Bebas Neue', sans-serif;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header y Título -->
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-4 md:py-6 flex flex-col md:flex-row justify-between items-center">
+            <h1 class="font-bebas text-4xl md:text-5xl text-center md:text-left" style="color: var(--primary);">
+                <i class="fas fa-fire-alt"></i>
+                Plan Fiestas de Quito 2025
+            </h1>
+            <p class="font-bold text-lg" style="color: var(--secondary);">¡La Farra Definitiva!</p>
+        </div>
+    </header>
+
+    <!-- Navegación por Pestañas -->
+    <nav class="bg-white shadow-sm sticky top-[84px] md:top-[92px] z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center md:justify-start space-x-4 md:space-x-8 overflow-x-auto py-3">
+                <button data-target="inicio" class="nav-link active text-lg font-semibold py-2 px-2 whitespace-nowrap">
+                    <i class="fas fa-home md:mr-2"></i><span class="hidden md:inline">Inicio</span>
+                </button>
+                <button data-target="dia1" class="nav-link text-lg font-semibold py-2 px-2 whitespace-nowrap">
+                    <i class="fas fa-calendar-day md:mr-2"></i>Viernes 5
+                </button>
+                <button data-target="dia2" class="nav-link text-lg font-semibold py-2 px-2 whitespace-nowrap">
+                    <i class="fas fa-calendar-day md:mr-2"></i>Sábado 6
+                </button>
+                <button data-target="dia3" class="nav-link text-lg font-semibold py-2 px-2 whitespace-nowrap">
+                    <i class="fas fa-calendar-day md:mr-2"></i>Domingo 7
+                </button>
+                <button data-target="presupuesto" class="nav-link text-lg font-semibold py-2 px-2 whitespace-nowrap">
+                    <i class="fas fa-dollar-sign md:mr-2"></i>Presupuesto
+                </button>
+                <button data-target="tips" class="nav-link text-lg font-semibold py-2 px-2 whitespace-nowrap">
+                    <i class="fas fa-lightbulb md:mr-2"></i>Tips
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenedor Principal de Contenido -->
+    <main class="container mx-auto p-4 md:p-8">
+
+        <!-- ===== SECCIÓN INICIO ===== -->
+        <section id="inicio" class="content-section active">
+            <div class="text-center bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="font-bebas text-5xl mb-4" style="color: var(--secondary);">¡Habla serio, ñaño!</h2>
+                <p class="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
+                    Este es el plan oficial para <strong>La Favela</strong>. Nos vamos a Quito a vivir las fiestas como se debe: con buenos sustos, buena comida, alturas y la farra madre.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+                <div class="card p-6 text-center">
+                    <i class="fas fa-users text-5xl mb-4" style="color: var(--primary);"></i>
+                    <h3 class="font-bebas text-3xl mb-2">Tripulación</h3>
+                    <p class="text-lg">La Favela (Panas de Ibarra + Pana del Tena)</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <i class="fas fa-calendar-check text-5xl mb-4" style="color: var(--primary);"></i>
+                    <h3 class="font-bebas text-3xl mb-2">Fecha</h3>
+                    <p class="text-lg">Viernes 5 al Domingo 7 de Diciembre 🔥</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <i class="fas fa-wallet text-5xl mb-4" style="color: var(--primary);"></i>
+                    <h3 class="font-bebas text-3xl mb-2">Presupuesto</h3>
+                    <p class="text-lg">$110 - $130 por cabeza (Aprox.)</p>
+                </div>
+                <div class="card p-6 text-center">
+                    <i class="fas fa-glass-cheers text-5xl mb-4" style="color: var(--primary);"></i>
+                    <h3 class="font-bebas text-3xl mb-2">Mood</h3>
+                    <p class="text-lg">"Llegué a mi límite muchachos" 😵🍻</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECCIÓN DÍA 1: VIERNES ===== -->
+        <section id="dia1" class="content-section">
+            <h2 class="font-bebas text-5xl text-center mb-8" style="color: var(--secondary);">📆 DÍA 1: Viernes 5 - Llegada, Sustos y Lujos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card Llegada -->
+                <div class="card">
+                    <div class="p-6">
+                        <span class="price-tag">GRATIS</span>
+                        <h3 class="card-title mt-4">Tarde: La Llegada</h3>
+                        <p class="mt-2 text-lg">Llegan los buses de Ibarra y Tena. De una, taxi/Uber a la "caleta" (departamento) a tirar las maletas y prepararnos.</p>
+                    </div>
+                </div>
+
+                <!-- Card Casa del Terror -->
+                <div class="card">
+                    <div class="p-6">
+                        <span class="price-tag">$14 por persona</span>
+                        <h3 class="card-title mt-4">PM: Adrenalina Pura</h3>
+                        <p class="mt-2 text-lg">Nos lanzamos a la <strong>Casa del Terror</strong>. Perfecto para empezar el viaje con el corazón a mil y ver quién es el más miedoso del grupo.</p>
+                    </div>
+                </div>
+
+                <!-- Card Casa Res -->
+                <div class="card md:col-span-2">
+                    <div class="p-6">
+                        <span class="price-tag">$15 - $20 por persona</span>
+                        <h3 class="card-title mt-4">Noche: La Cena Top en Casa Res</h3>
+                        <p class="mt-2 text-lg mb-4">Para que coman como gente, ustedes que solo viven tragando en los “agachaditos”. Esto les va a saber a gloria ñaños. Así que vayan viendo el menú y decidan con qué se van a empachar:</p>
+                        <a href="https://cdn.prod.website-files.com/672d0f21281a311fd4542777/688b7a72b4b92d4661f0563f_JUL%2031-%20CR%20-%20Men%C3%BA-Espa%C3%B1ol%20-%20JUL%202025%20(2).pdf" target="_blank" class="inline-flex items-center px-4 py-2 bg-[#ff4757] hover:bg-[#e84118] text-white font-bold rounded-full transition-colors">
+                            <i class="fas fa-utensils mr-2"></i> Ver Menú Casa Res
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECCIÓN DÍA 2: SÁBADO ===== -->
+        <section id="dia2" class="content-section">
+            <h2 class="font-bebas text-5xl text-center mb-8" style="color: var(--secondary);">📆 DÍA 2: Sábado 6 - Alturas, Centro y El Conciertazo</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card Teleférico -->
+                <div class="card">
+                    <div class="p-6">
+                        <span class="price-tag">$9 por persona</span>
+                        <h3 class="card-title mt-4">Mañana: Vista de Águila</h3>
+                        <p class="mt-2 text-lg">Subimos al <strong>Teleférico</strong>. Ideal para curar el chuchaqui moral con aire fresco a 4000 metros. Las fotos ahí son otro nivel.</p>
+                    </div>
+                </div>
+
+                <!-- Card Centro Histórico -->
+                <div class="card">
+                    <div class="p-6">
+                        <span class="price-tag">$5 por persona</span>
+                        <h3 class="card-title mt-4">Tarde: Golpe Cultural y Buena Comida</h3>
+                        <p class="mt-2 text-lg">Bajamos y nos pegamos una vuelta por el Centro Histórico. Y nos vamos a buscar ese almuerzo BBB (bueno, bonito y barato) con sopa, seco y jugo bien puestos.</p>
+                    </div>
+                </div>
+
+                <!-- Card Bicentenario/Foch -->
+                <div class="card lg:col-span-1 md:col-span-2">
+                    <div class="p-6">
+                        <span class="price-tag">GRATIS (+$10 en bebidas)</span>
+                        <h3 class="card-title mt-4">NOCHE: ¡EL EVENTO!</h3>
+                        <p class="mt-2 text-lg">Aquí hay 2 opciones: podemos ir al <strong>Parque Bicentenario</strong>, que es gratis y saben hacer unos conciertos bien chéveres, o ir a la <strong>Plaza Foch</strong> y bailotear por allá que también es bien chévere por fiestas de Quito.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECCIÓN DÍA 3: DOMINGO ===== -->
+        <section id="dia3" class="content-section">
+            <h2 class="font-bebas text-5xl text-center mb-8" style="color: var(--secondary);">📆 DÍA 3: Domingo 7 - Relax y Retorno</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Card La Carolina -->
+                <div class="card">
+                    <div class="p-6">
+                        <span class="price-tag">~$5 por persona</span>
+                        <h3 class="card-title mt-4">Mañana: Modo Chill en La Caro</h3>
+                        <p class="mt-2 text-lg">Vuelta por un Centro Comercial (CCI, Quicentro o El Jardín). Para "vitrinear" y relajarnos en el <strong>Parque La Carolina</strong> y ver qué comemos por ahí.</p>
+                    </div>
+                </div>
+
+                <!-- Card Retorno -->
+                <div class="card">
+                    <div class="p-6">
+                        <span class="price-tag">Costo de bus</span>
+                        <h3 class="card-title mt-4">Tarde: El Retorno</h3>
+                        <p class="mt-2 text-lg">Cada uno a su terminal (Carcelén o Quitumbe). Regresamos a la base, cansados pero felices. Misión cumplida.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECCIÓN PRESUPUESTO ===== -->
+        <section id="presupuesto" class="content-section">
+            <h2 class="font-bebas text-5xl text-center mb-8" style="color: var(--secondary);">Las Cuentas Claras (El Billete)</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Chart Container -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="font-bebas text-3xl text-center mb-4">Distribución del Gasto</h3>
+                    <div class="chart-container relative w-full max-w-sm mx-auto h-80 md:h-96">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-sm italic">Pasa el mouse sobre el gráfico para ver los detalles de cada categoría.</p>
+                </div>
+
+                <!-- Budget Table -->
+                <div class="lg:col-span-2 overflow-x-auto">
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h3 class="font-bebas text-3xl mb-4">Desglose por Persona</h3>
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="table-header">
+                                    <th class="p-3">Ítem</th>
+                                    <th class="p-3">Detalle</th>
+                                    <th class="p-3">Costo Aprox.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b">
+                                    <td class="p-3 font-semibold">Transporte Interprovincial</td>
+                                    <td class="p-3">Ibarra/Tena ↔ Quito</td>
+                                    <td class="p-3 font-bold">$18.00</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-3 font-semibold">Transporte Interno</td>
+                                    <td class="p-3">Ubers/Taxis/Metro (Full viajes)</td>
+                                    <td class="p-3 font-bold">$25.00</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-3 font-semibold">Viernes: Diversión y Lujo</td>
+                                    <td class="p-3">Casa del Terror + Cena Casa Res ($20)</td>
+                                    <td class="p-3 font-bold">$34.00</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-3 font-semibold">Sábado: Aventura y Farra</td>
+                                    <td class="p-3">Teleférico + Almuerzo + Bielas</td>
+                                    <td class="p-3 font-bold">$24.00</td>
+                                </tr>
+                                <tr class="border-b">
+                                    <td class="p-3 font-semibold">Domingo: Sobrevivencia</td>
+                                    <td class="p-3">Comida en La Carolina</td>
+                                    <td class="p-3 font-bold">$5.00</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 table-total" colspan="2">TOTAL ESTIMADO (Aprox.)</td>
+                                    <td class="p-3 table-total">$106.00 USD</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="text-center mt-4 text-lg font-bold" style="color: var(--primary);">
+                            ¡Con $130 vamos sobradísimos, somos reyes!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== SECCIÓN TIPS ===== -->
+        <section id="tips" class="content-section">
+            <h2 class="font-bebas text-5xl text-center mb-8" style="color: var(--secondary);">Recomendaciones de Oro (Para no dar papaya)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="tip-card p-6 shadow-lg rounded-r-lg">
+                    <h3 class="font-bebas text-3xl mb-3" style="color: var(--primary);"><i class="fas fa-mobile-alt mr-2"></i> ¡Pilas con los Celus!</h3>
+                    <p class="text-lg">En el Bicentenario o la Foch se pone full. El celular va en el bolsillo de adelante, siempre. Si llevas mochila, póntela al frente como canguro. ¡No seas "gil"!</p>
+                </div>
+                <div class="tip-card p-6 shadow-lg rounded-r-lg">
+                    <h3 class="font-bebas text-3xl mb-3" style="color: var(--primary);"><i class="fas fa-cloud-sun-rain mr-2"></i> Abríguense, Ñaños</h3>
+                    <p class="text-lg">Quito es loco. Tarde de solazo y noche de "pacheco" (frío) intenso. Lleven chompa buena, especialmente para el Teleférico y las noches.</p>
+                </div>
+                <div class="tip-card p-6 shadow-lg rounded-r-lg">
+                    <h3 class="font-bebas text-3xl mb-3" style="color: var(--primary);"><i class="fas fa-car mr-2"></i> Uber en Grupo</h3>
+                    <p class="text-lg">Como somos varios, sale mejor pedir una Uber XL o dividirnos en dos taxis seguros. No cojan taxis en la calle de noche si están "chumados".</p>
+                </div>
+                <div class="tip-card p-6 shadow-lg rounded-r-lg">
+                    <h3 class="font-bebas text-3xl mb-3" style="color: var(--primary);"><i class="fas fa-beer mr-2"></i> La Previa es Clave</h3>
+                    <p class="text-lg">El alcohol adentro de los eventos es caro. Mejor una buena previa "tranqui" en el depa antes de salir el sábado. ¡Salud!</p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12 bg-white p-8 rounded-lg shadow-lg">
+                <h2 class="font-bebas text-5xl mb-4" style="color: var(--secondary);">¡Ya está todo masticado!</h2>
+                <p class="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed">
+                    Solo falta que digan "SIMÓN" y nos fuimos.
+                </p>
+                <i class="fas fa-thumbs-up text-6xl mt-6" style="color: var(--primary);"></i>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            let budgetChart = null;
+
+            function updateActiveTab(targetId) {
+                navLinks.forEach(link => {
+                    if (link.dataset.target === targetId) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+
+                contentSections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.add('active');
+                    } else {
+                        section.classList.remove('active');
+                    }
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const targetId = link.dataset.target;
+                    updateActiveTab(targetId);
+                    
+                    if (targetId === 'presupuesto' && !budgetChart) {
+                        createBudgetChart();
+                    }
+                    window.scrollTo(0, 0);
+                });
+            });
+
+            function createBudgetChart() {
+                const ctx = document.getElementById('budgetChart').getContext('2d');
+                
+                // Datos actualizados según el nuevo presupuesto
+                const data = {
+                    labels: [
+                        'Transporte Interprovincial ($18)',
+                        'Transporte Interno ($25)',
+                        'Viernes: Terror y Cena ($34)',
+                        'Sábado: Aventura y Farra ($24)',
+                        'Domingo: Comidas ($5)'
+                    ],
+                    datasets: [{
+                        label: 'Desglose del Presupuesto',
+                        data: [18, 25, 34, 24, 5],
+                        backgroundColor: [
+                            '#2f3542', // secondary
+                            '#ff4757', // primary
+                            '#ffa502', // accent
+                            '#70a1ff', // Un azul complementario
+                            '#2ed573'  // Un verde complementario
+                        ],
+                        borderColor: '#f1f2f6',
+                        borderWidth: 3,
+                        hoverOffset: 10
+                    }]
+                };
+
+                const options = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        label += `$${context.parsed.toFixed(2)} (${percentage}%)`;
+                                    }
+                                    return label;
+                                }
+                            },
+                            backgroundColor: '#2f3542',
+                            titleFont: { size: 14, weight: 'bold' },
+                            bodyFont: { size: 12 },
+                            padding: 10,
+                            cornerRadius: 6,
+                            displayColors: true,
+                        }
+                    },
+                    cutout: '60%'
+                };
+
+                budgetChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data,
+                    options: options
+                });
+            }
+            
+            updateActiveTab('inicio');
+        });
+    </script>
+
+</body>
+</html>
